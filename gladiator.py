@@ -37,12 +37,15 @@ def redraw():
     if left:
         fenetre.blit(walk_left[compteur//3], (x, y))
         compteur += 1
+        print("2")
     elif right:
         fenetre.blit(walk_right[compteur//3], (x, y))
         compteur += 1
+        print("1")
     
     # pygame.draw.rect(fenetre, (255, 0, 0), (x, y, width, height))
-    pygame.display.update()     
+    pygame.display.update() 
+    pygame.display.flip() 
 
 continuer = 1
 while continuer:
@@ -53,24 +56,44 @@ while continuer:
         if event.type == pygame.QUIT:
             continuer = 0 
         
-    keys = pygame.key.get_pressed()
-        
-    if keys[pygame.K_LEFT]:
-        x -= vel
-        left = True
-        right = False
-    if keys[pygame.K_RIGHT]:
-        x += vel
-        left = False
-        right = True
-    else:
-        right = False
-        left = False
-        compteur = 0
+        if event.type == KEYDOWN:
+            if event.key == K_LEFT:
+                x -= vel
+                left = True
+                right = False
+                
+                # ///////////////////////////////////////
+                fenetre.blit(fond, (0,0))
+                if compteur + 1 >= 27:
+                    compteur = 0
+                if left:
+                    fenetre.blit(walk_left[compteur//3], (x, y))
+                    compteur += 1
+                    print("2")
+                elif right:
+                    fenetre.blit(walk_right[compteur//3], (x, y))
+                    compteur += 1
+                    print("1")
+    
+    # pygame.draw.rect(fenetre, (255, 0, 0), (x, y, width, height))
+                pygame.display.update() 
+                pygame.display.flip() 
+                #////////////////////////////////////////
+            elif event.key == K_RIGHT:
+                x += vel
+                left = False
+                right = True
+                redraw 
+            else:
+                right = False
+                left = False
+                compteur = 0
+                
+        pygame.display.flip()
                 # position_perso = position_perso.move(0.3)
     # fenetre.blit(fond, (0,0))
     # fenetre.blit(perso, position_perso)
     
     #pygame.display.flip()
-    redraw   
+    
 pygame.quit()
