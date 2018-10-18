@@ -10,15 +10,15 @@ fond = pygame.image.load("arene.jpg").convert()
 fenetre.blit(fond, (0,0))
 
 perso = pygame.image.load("marche1.jpg").convert()
-position_perso = perso.get_rect()
+position_perso = (0, 550)
 fenetre.blit(perso, position_perso)
 walk_left = [pygame.image.load("marche1.jpg"), pygame.image.load("marche4.jpg"), pygame.image.load("marche3.jpg"), pygame.image.load("marche2.jpg")]
 walk_right = [pygame.image.load("marche1.jpg"), pygame.image.load("marche2.jpg"), pygame.image.load("marche3.jpg"), pygame.image.load("marche4.jpg")]
 
 # clock = pygame.time.clock()
 
-x = 500
-y = 425
+x = 0
+y = 550
 width = 64
 height = 64
 vel = 5
@@ -32,16 +32,16 @@ pygame.display.flip()
 def redraw():
     global compteur
     fenetre.blit(fond, (0,0))
-    if compteur + 1 >= 27:
+    if compteur + 1 >= 57:
         compteur = 0
     if left:
         fenetre.blit(walk_left[compteur//3], (x, y))
         compteur += 1
-        print("2")
+        print("gauche")
     elif right:
         fenetre.blit(walk_right[compteur//3], (x, y))
         compteur += 1
-        print("1")
+        print("droit")
     
     # pygame.draw.rect(fenetre, (255, 0, 0), (x, y, width, height))
     pygame.display.update() 
@@ -49,7 +49,7 @@ def redraw():
 
 continuer = 1
 while continuer:
-    pygame.time.delay(50)
+    pygame.time.delay(10)
     #clock.tick(27)    
     for event in pygame.event.get():
                 # Arrêt du programme si l'on clique sur la croix de la fenêtre pour la fermer
@@ -61,29 +61,16 @@ while continuer:
                 x -= vel
                 left = True
                 right = False
+                redraw()
                 
                 # ///////////////////////////////////////
-                fenetre.blit(fond, (0,0))
-                if compteur + 1 >= 27:
-                    compteur = 0
-                if left:
-                    fenetre.blit(walk_left[compteur//3], (x, y))
-                    compteur += 1
-                    print("2")
-                elif right:
-                    fenetre.blit(walk_right[compteur//3], (x, y))
-                    compteur += 1
-                    print("1")
-    
-    # pygame.draw.rect(fenetre, (255, 0, 0), (x, y, width, height))
-                pygame.display.update() 
-                pygame.display.flip() 
+                # pygame.draw.rect(fenetre, (255, 0, 0), (x, y, width, height)s
                 #////////////////////////////////////////
             elif event.key == K_RIGHT:
                 x += vel
                 left = False
                 right = True
-                redraw 
+                redraw() 
             else:
                 right = False
                 left = False
@@ -97,3 +84,4 @@ while continuer:
     #pygame.display.flip()
     
 pygame.quit()
+
