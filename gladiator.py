@@ -2,9 +2,9 @@ import pygame
 from pygame.locals import *
 
 # musique
-pygame.mixer.music.load(undertale-megalovania.mp3) 
-pygame.mixer.music.play(loops=1, start=0, 0)
-pygame.mixer.music.rewind()
+pygame.mixer.init()
+pygame.mixer.music.load('musique.mp3') 
+pygame.mixer.music.play(loops=-1, start=0.0)
 
 #Personnage 
 pygame.init()
