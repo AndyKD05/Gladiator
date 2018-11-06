@@ -1,6 +1,12 @@
 import pygame
 from pygame.locals import *
 
+# musique
+pygame.mixer.music.load(undertale-megalovania.mp3) 
+pygame.mixer.music.play(loops=1, start=0, 0)
+pygame.mixer.music.rewind()
+
+#Personnage 
 pygame.init()
 
 fenetre = pygame.display.set_mode((1280,720))
