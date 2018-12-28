@@ -18,11 +18,10 @@ char = pygame.image.load("face.png")
 clock = pygame.time.Clock()
 
 score = 0
-
 best = 0
 tour = 1
 
-pause= False
+pause = False
 
 class player(object):
     def __init__(self, x, y, width, height):
@@ -104,7 +103,7 @@ class player(object):
                     i = 101
                     pygame.quit()
                     
-
+ 
 
 class projectile(object):
     def __init__(self,x,y,radius,color,facing):
@@ -237,11 +236,10 @@ class enemy2(object):
             self.vie = 20
         print('hit')
 
-#enemy3
 class enemy3(object):
     walkRight =[pygame.image.load("RV1.png"), pygame.image.load("RV2.png"), pygame.image.load("RV3.png"), pygame.image.load("RV4.png"), pygame.image.load("RV5.png"), pygame.image.load("RV6.png"), pygame.image.load("RV7.png"), pygame.image.load("RV8.png")]
     walkLeft = [pygame.image.load("LV1.png"), pygame.image.load("LV2.png"), pygame.image.load("LV3.png"), pygame.image.load("LV4.png"), pygame.image.load("LV5.png"), pygame.image.load("LV6.png"), pygame.image.load("LV7.png"), pygame.image.load("LV8.png")]
-              
+
     def __init__(self, x, y, width, height, end):
         self.x = x
         self.y = y
@@ -261,7 +259,7 @@ class enemy3(object):
         if self.visible:
             if self.walkCount + 1 >= 24:
                 self.walkCount = 0
-                
+
             if self.vel > 0:
                 ecran.blit(self.walkRight[self.walkCount//3], (self.x, self.y))
                 self.walkCount += 1
@@ -272,7 +270,7 @@ class enemy3(object):
             pygame.draw.rect(ecran, (0,255,0), (self.hitbox[0], self.hitbox[2] +100, 182 - (3.64 * (50 - self.vie)), 10))
             self.hitbox = (self.x , self.y , 182, 157)
             #pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
-    
+
 
     def move(self):
         if self.vel > 0:
@@ -315,18 +313,15 @@ def redrawGameWindow():
     pygame.display.update()
 
 
-
-
     
 #boucle principale
 font = pygame.font.SysFont('comicsans', 50, True)
 man = player(640, 625, 40, 60)
 bullets =[]
-tigre = enemy(1, 625, 125, 52, 1200)
-arregnie = enemy2(1, 615, 107, 52, 1200)
+tigre = enemy(1, 625, 125, 52, 1100)
+arregnie = enemy2(1, 615, 107, 52, 1150)
 dragon = enemy3(1, 300, 182, 152, 1200)
 run = True
-                
 while run:
     clock.tick(27)
     
@@ -350,7 +345,7 @@ while run:
                     tigre.y = 625
                     tigre.x = 1
                     dragon.x = 1
-                    dragon = 300
+                    dragon.y = 300
                     score = 0
                     tour = 1
                     pygame.display.update()
@@ -368,7 +363,7 @@ while run:
                     score = 0
                 else:
                     score -= (tour + 5)
-
+                    
                 if man.pause == True:
                     if best < score:
                         best = score
@@ -380,11 +375,12 @@ while run:
                     tigre.y = 625
                     tigre.x = 1
                     dragon.x = 1
-                    dragon = 300
+                    dragon.y = 300
                     score = 0
                     tour = 1
                     pygame.display.update()
                     man.pause = False
+                
     if arregnie.visible == False:
         tour += 1
         pygame.time.delay(160)
@@ -394,6 +390,7 @@ while run:
         if man.hitbox[1] < tigre.hitbox[1] + tigre.hitbox[3] and man.hitbox[1] + man.hitbox[3] > tigre.hitbox[1]:
             if man.hitbox[0] + man.hitbox[2] > tigre.hitbox [0] and man.hitbox [0] < tigre.hitbox[0] + tigre.hitbox[2]:    
                 man.hit()
+                score -= (tour + 5)
                 if man.pause == True:
                     man.Y = 250
                     man.x = 250
@@ -403,14 +400,13 @@ while run:
                     tigre.y = 625
                     tigre.x = 1
                     dragon.x = 1
-                    dragon = 300
+                    dragon.y = 300
                     score = 0
                     tour = 1
                     pygame.display.update()
                     continuer = 1
-                    while continuer:
-                        if keys[pygame.K_SPACE]:
-                            continuer = 0
+                    man.pause = False
+                
     if tigre.visible == False:
         tour += 1
         pygame.time.delay(160)
@@ -451,7 +447,7 @@ while run:
                 dragon.hit()
                 score += 6
                 bullets.pop(bullets.index(bullet))
-                
+
         if bullet.x < 1280 and bullet.x > 0:
             bullet.x += bullet.vel
         else:
@@ -504,5 +500,8 @@ while run:
          
 
 
+
+
             
 pygame.quit()
+
