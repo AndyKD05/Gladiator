@@ -19,10 +19,14 @@ clock = pygame.time.Clock()
 
 score = 0
 
+tour = 1
+
 class player(object):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
+        self.X = 40
+        self.Y = 250
         self.width = width
         self.height = height
         self.vel = 10
@@ -36,34 +40,50 @@ class player(object):
         
 
     def draw(self, ecran):
+        
+        ecran.blit(pygame.image.load("coeur.png"), (20,465))
+        pygame.draw.rect(ecran, (255, 0, 0), (20, 200, self.X, self.Y))
+        pygame.draw.rect(ecran, (0, 0, 0), (20, 200, 40, 250), 3)
+        
         if self.walkCount + 1 >= 9:
             self.walkCount = 0
+            
         if not(self.face):
             if self.left:
                 ecran.blit(walkLeft[self.walkCount//3], (self.x, self.y))
                 self.walkCount += 1
+                
             elif self.right:
                 ecran.blit(walkRight[self.walkCount//3], (self.x, self.y)) 
                 self.walkCount += 1
+                
         else:
              if self.right:
                  ecran.blit(walkRight[0], (self.x,self.y))
+                 
              else:
                  ecran.blit(walkLeft[0], (self.x,self.y))
+
+                 
         self.hitbox = (self.x , self.y +20 , 80, 130)
-        #pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
+
         
     def hit(self):
         self.isJump = False
         self.jumpCount = 10
         self.x = 1100
         self.y = 525
+        self.Y -= 25
         self.walkCount = 0
         font1 = pygame.font.SysFont('comicsans', 100)
-        text = font1.render('-5', 1, (255,0,0))
+        self.dommage = 4
+        self.tour = tour
+        self.dommage = self.tour + 5
+        text = font1.render('-' + str(self.dommage), 1, (255,0,0))
         ecran.blit(text,(650 - (text.get_width()/2),245))
         pygame.display.update()
         i = 0
+        
         while i < 300:
             pygame.time.delay(10)
             i += 1
@@ -104,6 +124,7 @@ class enemy(object):
         self.hitbox = (self.x , self.y, 121, 55)
         self.vie = 10
         self.visible = True
+        self.tour = tour
 
     def draw(self, ecran):
         self.move()
@@ -142,13 +163,17 @@ class enemy(object):
             self.vie -= 1
         else:
             self.visible = False
+            self.vie = 10
         print('hit')
         
 
 def redrawGameWindow():
     ecran.blit(fond, (0,0))
     text = font.render('Score:' + str(score), 1,(0,0,0,))
+    Text = font.render('ROUND ' + str(tour), 1, (255, 0, 0))
+    ecran.blit(Text, (550, 150))
     ecran.blit(text, (1100, 10))
+    
     man.draw(ecran)
     for bullet in bullets:
         bullet.draw(ecran)
@@ -158,21 +183,25 @@ def redrawGameWindow():
 
     
 #boucle principale
-font = pygame.font.SysFont('comicsans', 30, True)
+font = pygame.font.SysFont('comicsans', 50, True)
 man = player(250, 525, 40, 250)
 bullets =[]
 tigre = enemy(1, 615, 107, 52, 1200)
 run = True
 while run:
     clock.tick(27)
-
+    
     if tigre.visible == True:
         if man.hitbox[1] < tigre.hitbox[1] + tigre.hitbox[3] and man.hitbox[1] + man.hitbox[3] > tigre.hitbox[1]:
             if man.hitbox[0] + man.hitbox[2] > tigre.hitbox [0] and man.hitbox [0] < tigre.hitbox[0] + tigre.hitbox[2]:    
                 man.hit()
-                score -= 5
+                score -= (tour + 5)
+    if tigre.visible == False:
+        tour += 1
+        pygame.time.delay(5000)
+        tigre.visible = True
                 
-
+                
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -239,3 +268,4 @@ while run:
 
             
 pygame.quit()
+
