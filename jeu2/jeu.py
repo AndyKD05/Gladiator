@@ -32,7 +32,7 @@ class player(object):
         self.walkCount = 0
         self.jumpCount = 10
         self.face = True
-        self.hitbox = (self.x , self.y +20, 80, 130)
+        #self.hitbox = (self.x , self.y +20, 80, 130)
         
 
     def draw(self, ecran):
@@ -119,7 +119,7 @@ class enemy(object):
                 self.walkCount += 1
             pygame.draw.rect(ecran, (255,0,0), (self.hitbox[0], self.hitbox[2] +450, 120, 10))
             pygame.draw.rect(ecran, (0,255,0), (self.hitbox[0], self.hitbox[2] +450, 120 - (12 * (10 - self.vie)), 10))
-            self.hitbox = (self.x , self.y , 121, 50)
+            #self.hitbox = (self.x , self.y , 121, 50)
             pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
     
 
@@ -176,7 +176,7 @@ class enemy2(object):
                 self.walkCount += 1
             pygame.draw.rect(ecran, (255,0,0), (self.hitbox[0], self.hitbox[2] +500, 83, 10))
             pygame.draw.rect(ecran, (0,255,0), (self.hitbox[0], self.hitbox[2] +500, 83 - ((83/20) * (20 - self.vie)), 10))
-            self.hitbox = (self.x , self.y , 83, 72)
+            #self.hitbox = (self.x , self.y , 83, 72)
             pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
     
 
