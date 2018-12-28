@@ -1,28 +1,25 @@
 import pygame
-from pygame.locals import *
 pygame.init()
 
 # musique
-#pygame.mixer.init()
-#pygame.mixer.music.load('musique.mp3') 
-#pygame.mixer.music.play(loops=-1, start=0.0)
+pygame.mixer.init()
+pygame.mixer.music.load('musique.mp3') 
+pygame.mixer.music.play(loops=-1, start=0.0)
 
 ecran = pygame.display.set_mode((1280, 720))
 
 pygame.display.set_caption("Gladiator")
 
-walkLeft = [pygame.image.load("gauche1.jpg"), pygame.image.load("gauche2.jpg"), pygame.image.load("gauche3.jpg")]
-walkRight = [pygame.image.load("droite1.jpg"), pygame.image.load("droite2.jpg"), pygame.image.load("droite3.jpg")]
+walkLeft = [pygame.image.load("g1.png"), pygame.image.load("g2.png"), pygame.image.load("g3.png"), pygame.image.load("g4.png")]
+walkRight = [pygame.image.load("d1.png"), pygame.image.load("d2.png"), pygame.image.load("d3.png"), pygame.image.load("d4.png")]
 fond = pygame.image.load("arene.jpg")
-char = pygame.image.load("face.jpg")
+char = pygame.image.load("face.png")
 
 clock = pygame.time.Clock()
 
 score = 0
 
 tour = 1
-
-pause = False
 
 class player(object):
     def __init__(self, x, y, width, height):
@@ -40,10 +37,10 @@ class player(object):
         self.jumpCount = 10
         self.face = True
         self.hitbox = (self.x , self.y +20, 80, 130)
-        self.pause = False
+        
 
     def draw(self, ecran):
-        
+
         ecran.blit(pygame.image.load("coeur.png"), (20,465))
         pygame.draw.rect(ecran, (255, 0, 0), (20, 200, self.X, self.Y))
         pygame.draw.rect(ecran, (0, 0, 0), (20, 200, 40, 250), 3)
@@ -68,39 +65,32 @@ class player(object):
                  ecran.blit(walkLeft[0], (self.x,self.y))
 
                  
-        self.hitbox = (self.x , self.y +20 , 80, 130)
-
+        self.hitbox = (self.x , self.y , 33, 48)
+        #(pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
+        
         
     def hit(self):
         self.isJump = False
         self.jumpCount = 10
         self.x = 1100
-        self.y = 525
+        self.y = 625
+        self.Y -= 25
         self.walkCount = 0
         font1 = pygame.font.SysFont('comicsans', 100)
         self.dommage = 4
         self.tour = tour
-        self.dommage = self.tour + 5
+        self.dommage = self.tour +5
         text = font1.render('-' + str(self.dommage), 1, (255,0,0))
         ecran.blit(text,(650 - (text.get_width()/2),245))
         pygame.display.update()
         i = 0
-
-        if self.Y > 25:
-            self.Y -= 25
-        elif self.Y == 25:
-            self.Y -= 20
-        else:
-            self.pause = True
-            
-            
         
-        while i < 300:
+        while i < 100:
             pygame.time.delay(10)
             i += 1
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    i = 301
+                    i = 101
                     pygame.quit()
                     
 
@@ -120,8 +110,8 @@ class projectile(object):
 
 #enemy
 class enemy(object):
-    walkRight =[pygame.image.load("R1E.jpg"), pygame.image.load("R2E.jpg"), pygame.image.load("R3E.jpg"), pygame.image.load("R4E.jpg"), pygame.image.load("R5E.jpg"), pygame.image.load("R6E.jpg")]
-    walkLeft = [pygame.image.load("L1E.jpg"), pygame.image.load("L2E.jpg"), pygame.image.load("L3E.jpg"), pygame.image.load("L4E.jpg"), pygame.image.load("L5E.jpg"), pygame.image.load("L6E.jpg")]
+    walkRight =[pygame.image.load("R1E.png"), pygame.image.load("R2E.png"), pygame.image.load("R3E.png"), pygame.image.load("R4E.png"), pygame.image.load("R5E.png"), pygame.image.load("R6E.png")]
+    walkLeft = [pygame.image.load("L1E.png"), pygame.image.load("L2E.png"), pygame.image.load("L3E.png"), pygame.image.load("L4E.png"), pygame.image.load("L5E.png"), pygame.image.load("L6E.png")]
               
     def __init__(self, x, y, width, height, end):
         self.x = x
@@ -151,7 +141,7 @@ class enemy(object):
                 self.walkCount += 1
             pygame.draw.rect(ecran, (255,0,0), (self.hitbox[0], self.hitbox[2] +450, 120, 10))
             pygame.draw.rect(ecran, (0,255,0), (self.hitbox[0], self.hitbox[2] +450, 120 - (12 * (10 - self.vie)), 10))
-            self.hitbox = (self.x , self.y , 121, 55)
+            self.hitbox = (self.x , self.y , 121, 50)
             #pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
     
 
@@ -176,72 +166,137 @@ class enemy(object):
             self.visible = False
             self.vie = 10
         print('hit')
-        
+
+#enemy2
+class enemy2(object):
+    walkRight =[pygame.image.load("R1.png"), pygame.image.load("R2.png"), pygame.image.load("R3.png"), pygame.image.load("R4.png")]
+    walkLeft = [pygame.image.load("L1.png"), pygame.image.load("L2.png"), pygame.image.load("L3.png"), pygame.image.load("L4.png")]
+              
+    def __init__(self, x, y, width, height, end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [x, end]
+        self.walkCount = 0
+        self.vel = 6
+        self.hitbox = (self.x , self.y, 83, 72)
+        self.vie = 20
+        self.visible = True
+        self.tour = tour
+
+    def draw(self, ecran):
+        self.move()
+        if self.visible:
+            if self.walkCount + 1 >= 12:
+                self.walkCount = 0
+                
+            if self.vel > 0:
+                ecran.blit(self.walkRight[self.walkCount//3], (self.x, self.y))
+                self.walkCount += 1
+            else:
+                ecran.blit(self.walkLeft[self.walkCount//3], (self.x, self.y))
+                self.walkCount += 1
+            pygame.draw.rect(ecran, (255,0,0), (self.hitbox[0], self.hitbox[2] +500, 83, 10))
+            pygame.draw.rect(ecran, (0,255,0), (self.hitbox[0], self.hitbox[2] +500, 83 - ((83/20) * (20 - self.vie)), 10))
+            self.hitbox = (self.x , self.y , 83, 72)
+            #pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
+    
+
+    def move(self):
+        if self.vel > 0:
+            if self.x + self.vel < self.path[1]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        else:
+            if self.x - self.vel > self.path[0]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+
+    def hit(self):
+        if self.vie > 0:
+            self.vie -= 1
+        else:
+            self.visible = False
+            self.vie = 20
+        print('hit')
 
 def redrawGameWindow():
     ecran.blit(fond, (0,0))
-    text = font.render('Score:' + str(score), 1,(0,0,0,))
+    text = font.render('Score : ' + str(score), 1,(0,0,0,))
     Text = font.render('ROUND ' + str(tour), 1, (255, 0, 0))
-    ecran.blit(Text, (550, 150))
-    ecran.blit(text, (1100, 10))
+    ecran.blit(Text, (550,150))
+    ecran.blit(text, (1000, 10))
     
     man.draw(ecran)
     for bullet in bullets:
         bullet.draw(ecran)
     tigre.draw(ecran)
+    arregnie.draw(ecran)
     pygame.display.update()
 
 
     
 #boucle principale
 font = pygame.font.SysFont('comicsans', 50, True)
-man = player(250, 525, 40, 250)
+man = player(640, 625, 40, 60)
 bullets =[]
-tigre = enemy(1, 615, 107, 52, 1200)
+tigre = enemy(1, 625, 125, 52, 1100)
+arregnie = enemy2(1, 615, 107, 52, 1150)
 run = True
 while run:
     clock.tick(27)
     
+
+    if arregnie.visible == True:
+        if man.hitbox[1] < arregnie.hitbox[1] + arregnie.hitbox[3] and man.hitbox[1] + man.hitbox[3] > arregnie.hitbox[1]:
+            if man.hitbox[0] + man.hitbox[2] > arregnie.hitbox [0] and man.hitbox [0] < arregnie.hitbox[0] + arregnie.hitbox[2]:    
+                man.hit()
+                score -= (tour + 5)
+    if arregnie.visible == False:
+        tour += 1
+        pygame.time.delay(160)
+        arregnie.visible = True 
+
     if tigre.visible == True:
         if man.hitbox[1] < tigre.hitbox[1] + tigre.hitbox[3] and man.hitbox[1] + man.hitbox[3] > tigre.hitbox[1]:
             if man.hitbox[0] + man.hitbox[2] > tigre.hitbox [0] and man.hitbox [0] < tigre.hitbox[0] + tigre.hitbox[2]:    
                 man.hit()
                 score -= (tour + 5)
-                if man.pause == True:
-                    continuer = 1
-                    while continuer:
-                        man.Y = 250
-                        man.x = 250
-                        man.y = 525
-                        tigre.y = 615
-                        tigre.x = 1
-                        score = 0
-                        tour = 1
-                        if keys[pygame.K_SPACE]:
-                            continuer = 0
-                        
-
-
-
-
-
-                    
     if tigre.visible == False:
         tour += 1
-        pygame.time.delay(5000)
-        tigre.visible = True
-                
-                
+        pygame.time.delay(160)
+        tigre.visible = True    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-            
+
     for bullet in bullets:
+        if bullet.y - bullet.radius < arregnie.hitbox[1] + arregnie.hitbox[3] and arregnie.y + bullet.radius > arregnie.hitbox[1]:
+            if bullet.x + bullet.radius > arregnie.hitbox [0] and bullet.x - bullet.radius < arregnie.hitbox[0] + arregnie.hitbox[2]:    
+                arregnie.hit()
+                score += 1
+                bullets.pop(bullets.index(bullet))
+        if bullet.x < 1280 and bullet.x > 0:
+            bullet.x += bullet.vel
+        else:
+            bullets.pop(bullets.index(bullet))
+
+
+                
+    for bullet in bullets:            
         if bullet.y - bullet.radius < tigre.hitbox[1] + tigre.hitbox[3] and bullet.y + bullet.radius > tigre.hitbox[1]:
             if bullet.x + bullet.radius > tigre.hitbox [0] and bullet.x - bullet.radius < tigre.hitbox[0] + tigre.hitbox[2]:    
                 tigre.hit()
                 score += 1
                 bullets.pop(bullets.index(bullet))
+                
         if bullet.x < 1280 and bullet.x > 0:
             bullet.x += bullet.vel
         else:
@@ -256,7 +311,7 @@ while run:
             facing = 1
             
         if len(bullets) < 1:
-            bullets.append(projectile(round(man.x + man.width //2), round(man.y + man.height//2), 6, (0,0,0), facing))
+            bullets.append(projectile(round(man.x + man.width //7), round(man.y + man.height//7), 5, (0,0,0), facing))
 
     
     if keys[pygame.K_LEFT] and man.x > man.vel:
