@@ -8,7 +8,7 @@ pygame.mixer.music.play(loops=-1, start=0.0)
 
 ecran = pygame.display.set_mode((1280, 720))
 
-pygame.display.set_caption("Gladiator")
+pygame.display.set_caption("Jeu")
 
 walkLeft = [pygame.image.load("g1.png"), pygame.image.load("g2.png"), pygame.image.load("g3.png"), pygame.image.load("g4.png")]
 walkRight = [pygame.image.load("d1.png"), pygame.image.load("d2.png"), pygame.image.load("d3.png"), pygame.image.load("d4.png")]
@@ -18,10 +18,11 @@ char = pygame.image.load("face.png")
 clock = pygame.time.Clock()
 
 score = 0
+
 best = 0
 tour = 1
 
-pause = False
+pause= False
 
 class player(object):
     def __init__(self, x, y, width, height):
@@ -103,7 +104,7 @@ class player(object):
                     i = 101
                     pygame.quit()
                     
- 
+
 
 class projectile(object):
     def __init__(self,x,y,radius,color,facing):
@@ -236,6 +237,66 @@ class enemy2(object):
             self.vie = 20
         print('hit')
 
+#enemy3
+class enemy3(object):
+    walkRight =[pygame.image.load("RV1.png"), pygame.image.load("RV2.png"), pygame.image.load("RV3.png"), pygame.image.load("RV4.png"), pygame.image.load("RV5.png"), pygame.image.load("RV6.png"), pygame.image.load("RV7.png"), pygame.image.load("RV8.png")]
+    walkLeft = [pygame.image.load("LV1.png"), pygame.image.load("LV2.png"), pygame.image.load("LV3.png"), pygame.image.load("LV4.png"), pygame.image.load("LV5.png"), pygame.image.load("LV6.png"), pygame.image.load("LV7.png"), pygame.image.load("LV8.png")]
+              
+    def __init__(self, x, y, width, height, end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [x, end]
+        self.walkCount = 0
+        self.vel = 8
+        self.hitbox = (self.x , self.y, 182, 152)
+        self.vie = 50
+        self.visible = True
+        self.tour = tour
+
+    def draw(self, ecran):
+        self.move()
+        if self.visible:
+            if self.walkCount + 1 >= 24:
+                self.walkCount = 0
+                
+            if self.vel > 0:
+                ecran.blit(self.walkRight[self.walkCount//3], (self.x, self.y))
+                self.walkCount += 1
+            else:
+                ecran.blit(self.walkLeft[self.walkCount//3], (self.x, self.y))
+                self.walkCount += 1
+            pygame.draw.rect(ecran, (255,0,0), (self.hitbox[0], self.hitbox[2] +100, 182, 10))
+            pygame.draw.rect(ecran, (0,255,0), (self.hitbox[0], self.hitbox[2] +100, 182 - (3.64 * (50 - self.vie)), 10))
+            self.hitbox = (self.x , self.y , 182, 157)
+            #pygame.draw.rect(ecran, (255,0,0), self.hitbox,2)
+    
+
+    def move(self):
+        if self.vel > 0:
+            if self.x + self.vel < self.path[1]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        else:
+            if self.x - self.vel > self.path[0]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+
+    def hit(self):
+        if self.vie > 0:
+            self.vie -= 1
+        else:
+            self.visible = False
+            self.vie = 10
+        print('hit')
+
+
 def redrawGameWindow():
     ecran.blit(fond, (0,0))
     text = font.render('Score : ' + str(score), 1,(0,0,0,))
@@ -250,7 +311,10 @@ def redrawGameWindow():
         bullet.draw(ecran)
     tigre.draw(ecran)
     arregnie.draw(ecran)
+    dragon.draw(ecran)
     pygame.display.update()
+
+
 
 
     
@@ -258,22 +322,23 @@ def redrawGameWindow():
 font = pygame.font.SysFont('comicsans', 50, True)
 man = player(640, 625, 40, 60)
 bullets =[]
-tigre = enemy(1, 625, 125, 52, 1100)
-arregnie = enemy2(1, 615, 107, 52, 1150)
+tigre = enemy(1, 625, 125, 52, 1200)
+arregnie = enemy2(1, 615, 107, 52, 1200)
+dragon = enemy3(1, 300, 182, 152, 1200)
 run = True
+                
 while run:
     clock.tick(27)
     
-
-    if arregnie.visible == True:
-        if man.hitbox[1] < arregnie.hitbox[1] + arregnie.hitbox[3] and man.hitbox[1] + man.hitbox[3] > arregnie.hitbox[1]:
-            if man.hitbox[0] + man.hitbox[2] > arregnie.hitbox [0] and man.hitbox [0] < arregnie.hitbox[0] + arregnie.hitbox[2]:    
+    if dragon.visible == True:
+        if man.hitbox[1] < dragon.hitbox[1] + dragon.hitbox[3] and man.hitbox[1] + man.hitbox[3] > dragon.hitbox[1]:
+            if man.hitbox[0] + man.hitbox[2] > dragon.hitbox [0] and man.hitbox [0] < dragon.hitbox[0] + dragon.hitbox[2]:    
                 man.hit()
                 if score < (tour + 5):
                     score = 0
                 else:
                     score -= (tour + 5)
-                    
+
                 if man.pause == True:
                     if best < score:
                         best = score
@@ -284,11 +349,42 @@ while run:
                     arregnie.y = 615
                     tigre.y = 625
                     tigre.x = 1
+                    dragon.x = 1
+                    dragon = 300
                     score = 0
                     tour = 1
                     pygame.display.update()
                     man.pause = False
-                
+    if dragon.visible == False:
+        tour += 1
+        pygame.time.delay(160)
+        dragon.visible = True 
+    
+    if arregnie.visible == True:
+        if man.hitbox[1] < arregnie.hitbox[1] + arregnie.hitbox[3] and man.hitbox[1] + man.hitbox[3] > arregnie.hitbox[1]:
+            if man.hitbox[0] + man.hitbox[2] > arregnie.hitbox [0] and man.hitbox [0] < arregnie.hitbox[0] + arregnie.hitbox[2]:    
+                man.hit()
+                if score < (tour + 5):
+                    score = 0
+                else:
+                    score -= (tour + 5)
+
+                if man.pause == True:
+                    if best < score:
+                        best = score
+                    man.Y = 250
+                    man.x = 640
+                    man.y = 625
+                    arregnie.x = 1
+                    arregnie.y = 615
+                    tigre.y = 625
+                    tigre.x = 1
+                    dragon.x = 1
+                    dragon = 300
+                    score = 0
+                    tour = 1
+                    pygame.display.update()
+                    man.pause = False
     if arregnie.visible == False:
         tour += 1
         pygame.time.delay(160)
@@ -298,7 +394,6 @@ while run:
         if man.hitbox[1] < tigre.hitbox[1] + tigre.hitbox[3] and man.hitbox[1] + man.hitbox[3] > tigre.hitbox[1]:
             if man.hitbox[0] + man.hitbox[2] > tigre.hitbox [0] and man.hitbox [0] < tigre.hitbox[0] + tigre.hitbox[2]:    
                 man.hit()
-                score -= (tour + 5)
                 if man.pause == True:
                     man.Y = 250
                     man.x = 250
@@ -307,6 +402,8 @@ while run:
                     arregnie.y = 615
                     tigre.y = 625
                     tigre.x = 1
+                    dragon.x = 1
+                    dragon = 300
                     score = 0
                     tour = 1
                     pygame.display.update()
@@ -314,7 +411,6 @@ while run:
                     while continuer:
                         if keys[pygame.K_SPACE]:
                             continuer = 0
-                
     if tigre.visible == False:
         tour += 1
         pygame.time.delay(160)
@@ -341,6 +437,18 @@ while run:
         if bullet.y - bullet.radius < tigre.hitbox[1] + tigre.hitbox[3] and bullet.y + bullet.radius > tigre.hitbox[1]:
             if bullet.x + bullet.radius > tigre.hitbox [0] and bullet.x - bullet.radius < tigre.hitbox[0] + tigre.hitbox[2]:    
                 tigre.hit()
+                score += 6
+                bullets.pop(bullets.index(bullet))
+                
+        if bullet.x < 1280 and bullet.x > 0:
+            bullet.x += bullet.vel
+        else:
+            bullets.pop(bullets.index(bullet))
+
+    for bullet in bullets:            
+        if bullet.y - bullet.radius < dragon.hitbox[1] + dragon.hitbox[3] and bullet.y + bullet.radius > dragon.hitbox[1]:
+            if bullet.x + bullet.radius > tigre.hitbox [0] and bullet.x - bullet.radius < dragon.hitbox[0] + dragon.hitbox[2]:    
+                dragon.hit()
                 score += 6
                 bullets.pop(bullets.index(bullet))
                 
@@ -392,5 +500,9 @@ while run:
                 man.jumpCount = 10
              
     redrawGameWindow()
-                
+        
+         
+
+
+            
 pygame.quit()
